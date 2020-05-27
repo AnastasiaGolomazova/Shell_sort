@@ -1,0 +1,96 @@
+#include <iostream>
+#include <algorithm>
+#include <time.h>
+
+using namespace std;
+
+int* CreateArray(int size, int minRange, int maxRange) {
+	if (size <= 0) { // проработка исключений, если размер <= 0
+		throw 0;
+
+	}
+
+	int* Array = new int[size]; // создали массив размером size
+	for (int i = 0; i < size; i++) {
+		Array[i] = minRange + rand() % (maxRange - minRange); // заполнили массив нужным нам диапозоном
+	}
+	return Array;
+}
+
+void PrintArray(int* Array, int size) { // функция вывода
+	int i;
+	for (i = 0; i < size - 1; ++i)
+		cout << Array[i] << " ";
+	cout << Array[i] << endl;
+}
+
+void Shell_sort(int* Array, int size) {
+	// выбор длин шагов
+	int h = 1;
+	while (h < size)
+		h = 3 * h + 1;
+	h /= 3;
+	h /= 3;
+	// Алгоритм Шелла
+	while (h > 0) {
+		for (int s = h, b = 0; b < s; b++)
+			// Вставка для подпоследовательности a[b], a[b+s], a[b+2s], ...
+			for (int i = b + s; i < size; i += s) {
+				int x, j;
+				for (x = Array[i], j = i - s; j >= 0 && Array[j] > x; j -= s)
+					Array[j + s] = Array[j];
+				Array[j + s] = x;
+			}
+		h /= 3;
+	}
+}
+
+
+bool CheckArray(int *Array, int size) { // функция проверки, отсортирован ли массив
+	bool ok = true; 
+	if (Array != NULL) { 
+
+		for (int i = 0; i < size - 1; ++i) 
+			if (Array[i] > Array[i + 1]) 
+				return false;
+
+		return true;
+	}
+
+}
+
+int main() {
+	setlocale(LC_ALL, "Russian");
+	srand(time(NULL));
+	int size;// размер массива
+	int *Array = NULL;
+	cout << "size = ";
+	
+	try
+	{
+		cin >> size;
+		Array = CreateArray(size, 0, 1000);
+		PrintArray(Array, size);
+		Shell_sort(Array, size);
+		PrintArray(Array, size);
+
+		if (!CheckArray(Array, size))
+			cout << "Массив не отсортирован" << endl;
+		else
+			cout << "Массив отсортирован" << endl;
+
+	}
+	catch (int i)
+	{
+		switch (i)
+		{
+		case 0:
+			cout << "Размер недопустимых значений" << endl;
+		}
+	}
+	delete Array;
+	
+
+	system("pause");
+	return 0;
+}
